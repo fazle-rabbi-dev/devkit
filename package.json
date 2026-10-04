@@ -1,0 +1,49 @@
+{
+  "name": "my-electron-app",
+  "version": "1.0.0",
+  "description": "DevKit — dev swiss army knife",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "make-icon": "node scripts/make-ico.js",
+    "dist": "npm run make-icon && electron-builder --win nsis",
+    "dist:dir": "electron-builder --win --dir",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "build": {
+    "appId": "com.devkit.app",
+    "productName": "DevKit",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "index.html",
+      "main.js",
+      "styles.css",
+      "js/**/*",
+      "assets/icon.png",
+      "assets/icon.svg"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "DevKit"
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^44.5.1",
+    "electron-builder": "^26.15.3",
+    "png-to-ico": "^3.0.2",
+    "sharp": "^0.35.5"
+  }
+}

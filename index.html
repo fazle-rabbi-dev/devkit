@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-font="atkinson">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Fira+Code:wght@400;600&family=JetBrains+Mono:wght@400;700&family=Playfair+Display:wght@500;700&display=swap" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' https://unpkg.com https://cdn.jsdelivr.net https://esm.run https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://unpkg.com https://cdn.jsdelivr.net https://esm.run https://esm.sh https://generativelanguage.googleapis.com;" />
+  <title>DevKit — Dev Swiss Army Knife</title>
+  <link rel="icon" type="image/svg+xml" href="./assets/icon.svg" />
+  <link rel="stylesheet" href="./styles.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <div id="app">
+    <!-- ============ SIDEBAR ============
+      TO ADD A NEW TOOL:
+      1. Add a <button class="nav-item" data-tool="my-tool"> here
+      2. Add a <section id="tool-my-tool" class="tool-panel"> in <main>
+      3. Create js/tools/my-tool.js with window.DevTools.initMyTool()
+      4. Call it from js/app.js initTools()
+    ====================================== -->
+    <aside id="sidebar">
+      <div class="brand">
+        <div class="brand-icon"><img src="./assets/icon.svg" alt="DevKit icon" /></div>
+        <div><div class="brand-name">DevKit</div><div class="brand-sub">swiss army knife</div></div>
+      </div>
+      <div class="nav-label">TOOLS</div>
+      <nav id="nav">
+        <button class="nav-item active" data-tool="json"><i data-lucide="braces"></i><span>JSON Formatter</span></button>
+        <button class="nav-item" data-tool="password"><i data-lucide="key-round"></i><span>Password Hash</span></button>
+        <button class="nav-item" data-tool="lorem"><i data-lucide="align-left"></i><span>Lorem Ipsum</span></button>
+        <button class="nav-item" data-tool="counter"><i data-lucide="type"></i><span>Word Counter</span></button>
+        <button class="nav-item" data-tool="textcase"><i data-lucide="case-sensitive"></i><span>Text Formatter</span></button>
+        <button class="nav-item" data-tool="encoding"><i data-lucide="binary"></i><span>Encode / Decode</span></button>
+        <button class="nav-item" data-tool="encrypt"><i data-lucide="lock"></i><span>Encrypt / Decrypt</span></button>
+        <button class="nav-item" data-tool="signature"><i data-lucide="pen-line"></i><span>Digital Signature</span></button>
+        <button class="nav-item" data-tool="image"><i data-lucide="image"></i><span>Image → PNG</span></button>
+        <div class="nav-label nav-label-gap">AI POWERED</div>
+        <button class="nav-item ai-tool" data-tool="ai-grammar"><i data-lucide="spell-check"></i><span>Grammar Fixer</span></button>
+        <button class="nav-item ai-tool" data-tool="ai-banglish"><i data-lucide="languages"></i><span>Banglish → Bangla</span></button>
+        <button class="nav-item ai-tool" data-tool="ai-commit"><i data-lucide="git-branch"></i><span>Commit Writer</span></button>
+        <button class="nav-item ai-tool" data-tool="ai-pr"><i data-lucide="git-pull-request"></i><span>PR Writer</span></button>
+      </nav>
+      <div class="sidebar-foot">13 tools · local-first · v1.1</div>
+    </aside>
+
+    <div id="main-col">
+      <header id="topbar">
+        <div class="search-wrap">
+          <i data-lucide="search"></i>
+          <input id="tool-search" type="text" placeholder="Search tools… ( json, hash, base64… )" />
+        </div>
+        <div class="zoom-controls" role="group" aria-label="Zoom">
+          <button id="zoom-out" title="Zoom out (Ctrl+-)"><i data-lucide="minus"></i></button>
+          <button id="zoom-label" title="Reset zoom (Ctrl+0)">100%</button>
+          <button id="zoom-in" title="Zoom in (Ctrl++)"><i data-lucide="plus"></i></button>
+        </div>
+        <button id="ai-settings-btn" title="AI settings (Gemini key)"><i data-lucide="settings"></i></button>
+        <div class="theme-switch" role="group" aria-label="Theme">
+          <button data-set-theme="light" title="Color · Light"><i data-lucide="sun"></i></button>
+          <button data-set-theme="dark" title="Color · Dark"><i data-lucide="moon"></i></button>
+          <button data-set-theme="mono-light" title="Mono · Light"><i data-lucide="contrast"></i></button>
+          <button data-set-theme="mono-dark" title="Mono · Dark"><i data-lucide="eclipse"></i></button>
+        </div>
+      </header>
+
+      <main id="content">
+        <!-- ===== JSON ===== -->
+        <section id="tool-json" class="tool-panel active">
+          <div class="panel-head"><h2><i data-lucide="braces"></i> JSON Formatter & Tree Viewer</h2><p>Paste JSON, format it, validate it, explore it as a collapsible tree.</p></div>
+          <div class="toolbar">
+            <button class="btn primary" id="json-format"><i data-lucide="sparkles"></i>Format</button>
+            <button class="btn" id="json-minify"><i data-lucide="minimize-2"></i>Minify</button>
+            <button class="btn" id="json-validate"><i data-lucide="check-circle-2"></i>Validate</button>
+            <button class="btn" id="json-sample"><i data-lucide="file-json"></i>Sample</button>
+            <button class="btn" id="json-copy"><i data-lucide="copy"></i>Copy</button>
+            <button class="btn danger-ghost" id="json-clear"><i data-lucide="trash-2"></i>Clear</button>
+            <label class="indent-label">Indent <select id="json-indent"><option value="2">2</option><option value="4">4</option><option value="tab">Tab</option></select></label>
+          </div>
+          <div id="json-status" class="status"></div>
+          <div class="grid-2">
+            <div class="card"><div class="card-title">Input</div><textarea id="json-input" spellcheck="false" placeholder='{"hello": "world"}'></textarea></div>
+            <div class="card"><div class="card-title">Tree view <span id="json-meta" class="muted"></span></div><div id="json-tree" class="tree empty">Nothing to show yet.</div></div>
+          </div>
+        </section>
+
+        <!-- ===== PASSWORD HASH ===== -->
+        <section id="tool-password" class="tool-panel">
+          <div class="panel-head"><h2><i data-lucide="key-round"></i> Password Hashing & Validation</h2><p>SHA hashes via WebCrypto. Nothing leaves your machine.</p></div>
+          <div class="grid-2">
+            <div class="card"><div class="card-title">Hash generator</div>
+              <label class="lbl">Password<input type="password" id="pw-input" placeholder="Enter password" /></label>
+              <label class="lbl">Algorithm<select id="pw-algo"><option>SHA-256</option><option>SHA-384</option><option>SHA-512</option><option>SHA-1</option></select></label>
+              <div class="row"><button class="btn primary" id="pw-hash"><i data-lucide="hash"></i>Hash</button>
+              <button class="btn" id="pw-generate"><i data-lucide="dices"></i>Random 20-char</button></div>
+              <label class="lbl">Hash (hex)<textarea id="pw-output" rows="3" readonly spellcheck="false"></textarea></label>
+              <button class="btn" id="pw-copy"><i data-lucide="copy"></i>Copy hash</button>
+            </div>
+            <div class="card"><div class="card-title">Validate</div>
+              <label class="lbl">Candidate password<input type="password" id="pw-check-input" placeholder="Re-enter password" /></label>
+              <label class="lbl">Expected hash<textarea id="pw-check-hash" rows="3" spellcheck="false" placeholder="Paste expected hex hash"></textarea></label>
+              <button class="btn primary" id="pw-verify"><i data-lucide="shield-check"></i>Verify match</button>
+              <div id="pw-result" class="status"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== LOREM ===== -->
+        <section id="tool-lorem" class="tool-panel">
+          <div class="panel-head"><h2><i data-lucide="align-left"></i> Lorem Ipsum Generator</h2><p>Placeholder text for mockups.</p></div>
+          <div class="card"><div class="row wrap">
+            <label class="lbl inline">Type<select id="lorem-type"><option value="paragraphs">Paragraphs</option><option value="sentences">Sentences</option><option value="words">Words</option></select></label>
+            <label class="lbl inline">Count<input type="number" id="lorem-count" value="3" min="1" max="100" /></label>
+            <label class="chk"><input type="checkbox" id="lorem-classic" checked /> Start with “Lorem ipsum…”</label>
+            <button class="btn primary" id="lorem-go"><i data-lucide="wand-2"></i>Generate</button>
+            <button class="btn" id="lorem-copy"><i data-lucide="copy"></i>Copy</button>
+          </div><textarea id="lorem-output" rows="12" spellcheck="false"></textarea></div>
+        </section>
+
+        <!-- ===== COUNTER ===== -->
+        <section id="tool-counter" class="tool-panel">
+          <div class="panel-head"><h2><i data-lucide="type"></i> Word & Character Counter</h2><p>Live stats as you type.</p></div>
+          <div class="stat-grid">
+            <div class="stat"><span class="stat-num" id="c-words">0</span><span class="stat-lbl">Words</span></div>
+            <div class="stat"><span class="stat-num" id="c-chars">0</span><span class="stat-lbl">Characters</span></div>
+            <div class="stat"><span class="stat-num" id="c-noSpaces">0</span><span class="stat-lbl">No spaces</span></div>
+            <div class="stat"><span class="stat-num" id="c-sent">0</span><span class="stat-lbl">Sentences</span></div>
+            <div class="stat"><span class="stat-num" id="c-para">0</span><span class="stat-lbl">Paragraphs</span></div>
+            <div class="stat"><span class="stat-num" id="c-read">0s</span><span class="stat-lbl">Read time</span></div>
+          </div>
+          <div class="card"><textarea id="counter-input" rows="12" placeholder="Type or paste text here…"></textarea>
+          <div class="row"><button class="btn" id="counter-copy"><i data-lucide="copy"></i>Copy text</button><button class="btn danger-ghost" id="counter-clear"><i data-lucide="trash-2"></i>Clear</button></div></div>
+        </section>
+
+        <!-- ===== TEXTCASE ===== -->
+        <section id="tool-textcase" class="tool-panel">
+          <div class="panel-head"><h2><i data-lucide="case-sensitive"></i> Text Formatter</h2><p>Change case, clean whitespace, slugify.</p></div>
+          <div class="card"><textarea id="tc-input" rows="8" placeholder="Enter text…"></textarea>
+            <div class="btn-grid">
+              <button class="btn" data-tc="upper">UPPERCASE</button>
+              <button class="btn" data-tc="lower">lowercase</button>
+              <button class="btn" data-tc="title">Title Case</button>
+              <button class="btn" data-tc="sentence">Sentence case</button>
+              <button class="btn" data-tc="camel">camelCase</button>
+              <button class="btn" data-tc="snake">snake_case</button>
+              <button class="btn" data-tc="kebab">kebab-case</button>
+              <button class="btn" data-tc="slug">slugify-url</button>
+              <button class="btn" data-tc="alternating">aLtErNaTiNg</button>
+              <button class="btn" data-tc="inverse">iNVERSE</button>
+              <button class="btn" data-tc="trim">Trim lines</button>
+              <button class="btn" data-tc="spaces">Collapse spaces</button>
+              <button class="btn" data-tc="reverse">Reverse</button>
+              <button class="btn" data-tc="removeEmpty">Remove empty lines</button>
+            </div>
+            <div class="row"><button class="btn primary" id="tc-copy"><i data-lucide="copy"></i>Copy result</button><button class="btn danger-ghost" id="tc-clear"><i data-lucide="trash-2"></i>Clear</button></div>
+          </div>
+        </section>
+
+        <!-- ===== ENCODING ===== -->
+        <section id="tool-encoding" class="tool-panel">
+          <div class="panel-head"><h2><i data-lucide="binary"></i> Encoding / Decoding</h2><p>Base64, URL, HTML entities, Hex, Unicode escapes.</p></div>
+          <div class="card">
+            <div class="row wrap">
+              <label class="lbl inline">Codec<select id="enc-codec"><option value="base64">Base64</option><option value="base64url">Base64URL</option><option value="url">URL / percent</option><option value="html">HTML entities</option><option value="hex">Hex</option><option value="unicode">Unicode \uXXXX</option></select></label>
+              <button class="btn primary" id="enc-encode"><i data-lucide="arrow-down"></i>Encode ↓</button>
+              <button class="btn primary" id="enc-decode"><i data-lucide="arrow-up"></i>Decode ↑</button>
+              <button class="btn" id="enc-swap"><i data-lucide="arrow-up-down"></i>Swap</button>
+            </div>
+            <div id="enc-status" class="status"></div>
+            <div class="grid-2">
+              <label class="lbl">Plain / decoded<textarea id="enc-plain" rows="8" spellcheck="false" placeholder="Hello world 👋"></textarea></label>
+              <label class="lbl">Encoded<textarea id="enc-coded" rows="8" spellcheck="false" placeholder="Encoded output…"></textarea></label>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== ENCRYPT ===== -->
+        <section id="tool-encrypt" class="tool-panel">
+          <div class="panel-head"><h2><i data-lucide="lock"></i> Encrypt / Decrypt</h2><p>AES-GCM 256 with PBKDF2 key derivation. Format: <code>salt.iv.ciphertext</code> (base64).</p></div>
+          <div class="card">
+            <label class="lbl">Password (key)<input type="password" id="crypto-pass" placeholder="Strong password" /></label>
+            <div class="grid-2">
+              <label class="lbl">Plaintext<textarea id="crypto-plain" rows="7" spellcheck="false" placeholder="Secret message…"></textarea></label>
+              <label class="lbl">Ciphertext<textarea id="crypto-cipher" rows="7" spellcheck="false" placeholder="salt.iv.data…"></textarea></label>
+            </div>
+            <div class="row wrap"><button class="btn primary" id="crypto-enc"><i data-lucide="lock"></i>Encrypt →</button>
+            <button class="btn primary" id="crypto-dec"><i data-lucide="lock-open"></i>← Decrypt</button>
+            <button class="btn danger-ghost" id="crypto-clear"><i data-lucide="trash-2"></i>Clear</button></div>
+            <div id="crypto-status" class="status"></div>
+          </div>
+        </section>
+
+        <!-- ===== SIGNATURE ===== -->
+        <section id="tool-signature" class="tool-panel">
+          <div class="panel-head"><h2><i data-lucide="pen-line"></i> Digital Signature — Create & Validate</h2><p>ECDSA P-256 + SHA-256. Generate a keypair, sign messages, verify signatures.</p></div>
+          <div class="toolbar"><button class="btn primary" id="sig-gen"><i data-lucide="key-round"></i>Generate new keypair</button>
+          <button class="btn" id="sig-copy-pub"><i data-lucide="copy"></i>Copy public key</button>
+          <button class="btn" id="sig-copy-priv"><i data-lucide="copy"></i>Copy private key</button></div>
+          <div class="grid-2">
+            <div class="card"><div class="card-title">Keys (JWK)</div>
+              <label class="lbl">Public key<textarea id="sig-pub" rows="4" spellcheck="false"></textarea></label>
+              <label class="lbl">Private key<textarea id="sig-priv" rows="4" spellcheck="false"></textarea></label>
+            </div>
+            <div class="card"><div class="card-title">Sign / Verify</div>
+              <label class="lbl">Message<textarea id="sig-msg" rows="3" placeholder="Message to sign…"></textarea></label>
+              <div class="row"><button class="btn primary" id="sig-sign"><i data-lucide="pen-line"></i>Sign</button>
+              <button class="btn primary" id="sig-verify"><i data-lucide="shield-check"></i>Verify</button></div>
+              <label class="lbl">Signature (base64)<textarea id="sig-sig" rows="3" spellcheck="false"></textarea></label>
+              <div id="sig-status" class="status"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== IMAGE ===== -->
+        <section id="tool-image" class="tool-panel">
+          <div class="panel-head"><h2><i data-lucide="image"></i> Image Paste → Download as PNG</h2><p>Paste from clipboard (Ctrl+V), drag & drop, or browse. Converts to PNG.</p></div>
+          <div class="card">
+            <div class="row wrap">
+              <button class="btn primary" id="img-browse"><i data-lucide="folder-open"></i>Browse file</button>
+              <button class="btn" id="img-paste-btn"><i data-lucide="clipboard-paste"></i>Read clipboard</button>
+              <button class="btn" id="img-download" disabled><i data-lucide="download"></i>Download PNG</button>
+              <button class="btn danger-ghost" id="img-clear"><i data-lucide="trash-2"></i>Clear</button>
+              <input type="file" id="img-file" accept="image/*" hidden />
+            </div>
+            <div id="img-drop" class="dropzone"><i data-lucide="image-plus"></i><p><b>Paste (Ctrl+V)</b> or drop an image here</p><span class="muted">Any format → exported as PNG</span></div>
+            <div id="img-meta" class="muted"></div>
+            <img id="img-preview" alt="" />
+          </div>
+        </section>
+
+        <!-- ===== AI: GRAMMAR ===== -->
+        <section id="tool-ai-grammar" class="tool-panel">
+          <div class="panel-head"><h2><i data-lucide="spell-check"></i> Grammar Fixer</h2><p>Paste text, press <code>Ctrl + Enter</code>, get the corrected version.</p></div>
+          <div class="card">
+            <div class="toolbar">
+              <button class="btn primary" id="gr-fix"><i data-lucide="sparkles"></i>Fix grammar</button>
+              <button class="btn" id="gr-copy"><i data-lucide="copy"></i>Copy result</button>
+              <button class="btn danger-ghost" id="gr-clear"><i data-lucide="trash-2"></i>Clear</button>
+              <span class="muted">Tip: Ctrl + Enter to run</span>
+            </div>
+            <div id="gr-status" class="status"></div>
+            <div class="grid-2">
+              <label class="lbl">Original<textarea id="gr-input" rows="10" spellcheck="false" placeholder="Paste text with grammar issues…"></textarea></label>
+              <label class="lbl">Fixed<textarea id="gr-output" rows="10" readonly spellcheck="false" placeholder="Fixed version appears here…"></textarea></label>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== AI: BANGLISH → BANGLA ===== -->
+        <section id="tool-ai-banglish" class="tool-panel">
+          <div class="panel-head"><h2><i data-lucide="languages"></i> Banglish → Bangla Converter</h2><p>Write Bengali phonetically in English letters — get plain Bangla script. Technical terms stay in English.</p></div>
+          <div class="card">
+            <div class="toolbar">
+              <button class="btn primary" id="bl-convert"><i data-lucide="languages"></i>Convert to Bangla</button>
+              <button class="btn" id="bl-copy"><i data-lucide="copy"></i>Copy result</button>
+              <button class="btn danger-ghost" id="bl-clear"><i data-lucide="trash-2"></i>Clear</button>
+              <span class="muted">Tip: Ctrl + Enter to run</span>
+            </div>
+            <div id="bl-status" class="status"></div>
+            <div class="grid-2">
+              <label class="lbl">Banglish (phonetic)<textarea id="bl-input" rows="10" spellcheck="false" placeholder="e.g. ami terminal e git commit korechi, eta amazing lagche…"></textarea></label>
+              <label class="lbl">Bangla<textarea id="bl-output" rows="10" readonly spellcheck="false" placeholder="Converted Bangla appears here…"></textarea></label>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== AI: COMMIT WRITER ===== -->
+        <section id="tool-ai-commit" class="tool-panel">
+          <div class="panel-head"><h2><i data-lucide="git-branch"></i> Git Commit Message Writer</h2><p>Describe what you did — get 3 conventional-commit variants (feat, fix, …) with descriptions.</p></div>
+          <div class="card">
+            <label class="lbl">What did you do? (changes, context)<textarea id="cm-input" rows="5" spellcheck="false" placeholder="e.g. fixed login crash on empty password, added validation tests…"></textarea></label>
+            <label class="lbl">Diff / files changed (optional)<textarea id="cm-diff" rows="3" spellcheck="false" placeholder="e.g. auth.js, login.test.js…"></textarea></label>
+            <div class="toolbar">
+              <button class="btn primary" id="cm-go"><i data-lucide="wand-2"></i>Write 3 variants</button>
+              <span class="muted">Tip: Ctrl + Enter to run</span>
+            </div>
+            <div id="cm-status" class="status"></div>
+            <div id="cm-variants"></div>
+          </div>
+        </section>
+
+        <!-- ===== AI: PR WRITER ===== -->
+        <section id="tool-ai-pr" class="tool-panel">
+          <div class="panel-head"><h2><i data-lucide="git-pull-request"></i> Pull Request Writer</h2><p>Describe the work — get a PR title plus a structured description.</p></div>
+          <div class="card">
+            <label class="lbl">What did you do? (changes, why)<textarea id="pr-input" rows="5" spellcheck="false" placeholder="e.g. added zoom controls, fixed theme bug…"></textarea></label>
+            <label class="lbl">Extra context (optional: issue #, testing notes)<textarea id="pr-context" rows="3" spellcheck="false" placeholder="e.g. closes #42, tested on Windows…"></textarea></label>
+            <div class="toolbar">
+              <button class="btn primary" id="pr-go"><i data-lucide="wand-2"></i>Write PR</button>
+              <button class="btn" id="pr-copy"><i data-lucide="copy"></i>Copy result</button>
+              <button class="btn danger-ghost" id="pr-clear"><i data-lucide="trash-2"></i>Clear</button>
+              <span class="muted">Tip: Ctrl + Enter to run</span>
+            </div>
+            <div id="pr-status" class="status"></div>
+            <label class="lbl">PR title + description<textarea id="pr-output" rows="12" readonly spellcheck="false" placeholder="Generated PR appears here…"></textarea></label>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <div id="toast"></div>
+
+  <!-- AI settings modal -->
+  <div id="ai-modal-backdrop" hidden>
+    <div class="modal card">
+      <div class="modal-head"><span class="card-title">AI Settings</span><button id="ai-modal-close" class="icon-btn" title="Close"><i data-lucide="x"></i></button></div>
+      <p>Stored <b>only</b> in this app's localStorage. Sent nowhere except Google's Gemini API when you run an AI tool.</p>
+      <label class="lbl">Gemini API key<input type="password" id="ai-key" placeholder="AIza…" autocomplete="off" spellcheck="false" /></label>
+      <label class="lbl">Model ID<input type="text" id="ai-model" placeholder="gemini-flash-latest" autocomplete="off" spellcheck="false" /></label>
+      <label class="chk"><input type="checkbox" id="ai-show" /> Show key</label>
+      <div class="row" style="margin-top:10px">
+        <button class="btn primary" id="ai-save"><i data-lucide="save"></i>Save</button>
+        <button class="btn danger-ghost" id="ai-clear-key"><i data-lucide="trash-2"></i>Remove key</button>
+      </div>
+      <p class="muted">Get a key from Google AI Studio. Note: a client-side key is visible to anyone with access to this device — use a backend proxy for production.</p>
+      <div class="set-divider">APPEARANCE</div>
+      <label class="lbl">Font family
+        <select id="ui-font">
+          <option value="atkinson">Atkinson Hyperlegible</option>
+          <option value="jetbrains">JetBrains Mono</option>
+          <option value="dmsans">DM Sans</option>
+          <option value="playfair">Playfair Display</option>
+          <option value="fira">Fira Code</option>
+        </select>
+      </label>
+      <div class="font-size-ctl">
+        <span class="muted">Text size</span>
+        <div class="zoom-controls">
+          <button id="font-dec" title="Smaller text"><i data-lucide="minus"></i></button>
+          <button id="font-size-label" title="Reset text size">100%</button>
+          <button id="font-inc" title="Larger text"><i data-lucide="plus"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./js/utils.js"></script>
+  <script src="./js/ai.js"></script>
+  <script src="./js/tools/json.js"></script>
+  <script src="./js/tools/password.js"></script>
+  <script src="./js/tools/lorem.js"></script>
+  <script src="./js/tools/counter.js"></script>
+  <script src="./js/tools/textcase.js"></script>
+  <script src="./js/tools/encoding.js"></script>
+  <script src="./js/tools/encrypt.js"></script>
+  <script src="./js/tools/signature.js"></script>
+  <script src="./js/tools/image.js"></script>
+  <script src="./js/tools/ai-grammar.js"></script>
+  <script src="./js/tools/ai-banglish.js"></script>
+  <script src="./js/tools/ai-commit.js"></script>
+  <script src="./js/tools/ai-pr.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>
